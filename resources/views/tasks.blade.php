@@ -19,11 +19,17 @@
     </div>
     <!-- End Logo -->
 
+    @error('title')
+        <div class="mt-4 text-red-600 bg-red-200 px-2 py-1 rounded-lg text-sm"> {{ $message }} </div>
+    @enderror
+
     <!-- Start Create -->
-    <form class="mt-4">
+    <form action="{{route('task.store')}}" method="POST" class="mt-4">
+        @csrf
         <label for="task" class="text-lg">Create Task</label>
         <div class="flex items-stretch mt-2">
-            <input type="text" id="task" name="task" class="w-full rounded-lg shadow-lg px-2 py-2 outline-none">
+            <input type="text" id="task" name="title" class="w-full rounded-lg shadow-lg px-2 py-2 outline-none
+                @error('title') border-2 border-red-200 @enderror">
             <button type="submit" class="bg-purple-500 shadow-lg text-white px-6 py-2 rounded-lg ml-2">
                 <svg class="fill-current w-5 h-5" viewBox="0 0 448 512">
                     <path d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"/>
@@ -31,6 +37,7 @@
             </button>
         </div>
     </form>
+
     <!-- End Create -->
 
 
@@ -39,51 +46,31 @@
     <div class="my-6">
         <h5 class="text-lg">Tasks</h5>
         <hr class="border-2 mt-2 border-purple-300"/>
-        <div class="bg-white mt-4 rounded-lg shadow-lg px-2 py-2 flex justify-between items-center">
-            this is task 3
-            <div class="ml-2">
-                <button class="mr-1 ">
-                    <svg class="fill-current text-purple-500 w-5 h-5"  viewBox="0 0 512 512">
-                        <path d="M290.74 93.24l128.02 128.02-277.99 277.99-114.14 12.6C11.35 513.54-1.56 500.62.14 485.34l12.7-114.22 277.9-277.88zm207.2-19.06l-60.11-60.11c-18.75-18.75-49.16-18.75-67.91 0l-56.55 56.55 128.02 128.02 56.55-56.55c18.75-18.76 18.75-49.16 0-67.91z"/>
-                    </svg>
-                </button>
-                <button class="mt-1">
-                    <svg class="fill-current text-red-500 w-5 h-5" viewBox="0 0 448 512">
-                        <path d="M432 32H312l-9.4-18.7A24 24 0 00281.1 0H166.8a23.72 23.72 0 00-21.4 13.3L136 32H16A16 16 0 000 48v32a16 16 0 0016 16h416a16 16 0 0016-16V48a16 16 0 00-16-16zM53.2 467a48 48 0 0047.9 45h245.8a48 48 0 0047.9-45L416 128H32z"/>
-                    </svg>
-                </button>
+        @foreach($tasks as $task)
+            <div class="bg-white mt-4 rounded-lg shadow-lg px-2 py-2 flex justify-between items-center">
+                {{ $task->title }}
+                <div class="ml-2">
+                    <!-- edit button -->
+                    <button class="mr-2">
+                        <svg class="fill-current text-purple-500 w-4 h-4"  viewBox="0 0 512 512">
+                            <path d="M290.74 93.24l128.02 128.02-277.99 277.99-114.14 12.6C11.35 513.54-1.56 500.62.14 485.34l12.7-114.22 277.9-277.88zm207.2-19.06l-60.11-60.11c-18.75-18.75-49.16-18.75-67.91 0l-56.55 56.55 128.02 128.02 56.55-56.55c18.75-18.76 18.75-49.16 0-67.91z"/>
+                        </svg>
+                    </button>
+
+                    <!-- delete button -->
+                    <form action="{{route('task.destroy',$task->id)}}" method="POST" class="inline-block">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="mt-1">
+                            <svg class="fill-current text-red-500 w-4 h-4" viewBox="0 0 448 512">
+                                <path d="M432 32H312l-9.4-18.7A24 24 0 00281.1 0H166.8a23.72 23.72 0 00-21.4 13.3L136 32H16A16 16 0 000 48v32a16 16 0 0016 16h416a16 16 0 0016-16V48a16 16 0 00-16-16zM53.2 467a48 48 0 0047.9 45h245.8a48 48 0 0047.9-45L416 128H32z"/>
+                            </svg>
+                        </button>
+                    </form>
+
+                </div>
             </div>
-        </div>
-        <div class="bg-white mt-4 rounded-lg shadow-lg px-2 py-2 flex justify-between items-center">
-            this is task 2
-            <div class="ml-2">
-                <button class="mr-1 ">
-                    <svg class="fill-current text-purple-500 w-5 h-5"  viewBox="0 0 512 512">
-                        <path d="M290.74 93.24l128.02 128.02-277.99 277.99-114.14 12.6C11.35 513.54-1.56 500.62.14 485.34l12.7-114.22 277.9-277.88zm207.2-19.06l-60.11-60.11c-18.75-18.75-49.16-18.75-67.91 0l-56.55 56.55 128.02 128.02 56.55-56.55c18.75-18.76 18.75-49.16 0-67.91z"/>
-                    </svg>
-                </button>
-                <button class="mt-1">
-                    <svg class="fill-current text-red-500 w-5 h-5" viewBox="0 0 448 512">
-                        <path d="M432 32H312l-9.4-18.7A24 24 0 00281.1 0H166.8a23.72 23.72 0 00-21.4 13.3L136 32H16A16 16 0 000 48v32a16 16 0 0016 16h416a16 16 0 0016-16V48a16 16 0 00-16-16zM53.2 467a48 48 0 0047.9 45h245.8a48 48 0 0047.9-45L416 128H32z"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        <div class="bg-white mt-4 rounded-lg shadow-lg px-2 py-2 flex justify-between items-center">
-            this is task 3
-            <div class="ml-2">
-                <button class="mr-1 ">
-                    <svg class="fill-current text-purple-500 w-5 h-5"  viewBox="0 0 512 512">
-                        <path d="M290.74 93.24l128.02 128.02-277.99 277.99-114.14 12.6C11.35 513.54-1.56 500.62.14 485.34l12.7-114.22 277.9-277.88zm207.2-19.06l-60.11-60.11c-18.75-18.75-49.16-18.75-67.91 0l-56.55 56.55 128.02 128.02 56.55-56.55c18.75-18.76 18.75-49.16 0-67.91z"/>
-                    </svg>
-                </button>
-                <button class="mt-1">
-                    <svg class="fill-current text-red-500 w-5 h-5" viewBox="0 0 448 512">
-                        <path d="M432 32H312l-9.4-18.7A24 24 0 00281.1 0H166.8a23.72 23.72 0 00-21.4 13.3L136 32H16A16 16 0 000 48v32a16 16 0 0016 16h416a16 16 0 0016-16V48a16 16 0 00-16-16zM53.2 467a48 48 0 0047.9 45h245.8a48 48 0 0047.9-45L416 128H32z"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
+        @endforeach
     </div>
     <!-- End all tasks -->
 
@@ -94,5 +81,6 @@
 <livewire:scripts />
 <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js"></script>
 <!-- End Scripts -->
+@include('sweet::alert')
 </body>
 </html>

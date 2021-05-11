@@ -16,3 +16,5 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('tasks');
 });
+
+Route::resource('task',\App\Http\Controllers\TaskController::class)->except(['show', 'create', 'edit']);
