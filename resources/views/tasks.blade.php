@@ -5,11 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <livewire:styles />
     <title>Task Manager</title>
 </head>
 <body class="antialiased bg-purple-50">
 <div class="w-full p-4 max-w-lg mx-auto mt-2">
+
     <!-- Start Logo -->
     <div class="flex justify-center items-center">
         <svg class="fill-current w-6 h-6 text-purple-500" viewBox="0 0 512 512">
@@ -19,9 +19,17 @@
     </div>
     <!-- End Logo -->
 
-    @error('title')
-        <div class="mt-4 text-red-600 bg-red-200 px-2 py-1 rounded-lg text-sm"> {{ $message }} </div>
-    @enderror
+    <!-- Start Errors -->
+    @if ($errors->any())
+        <div class="mt-4 text-red-600 bg-red-200 px-2 py-1 rounded-lg text-sm">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+    <!-- End Errors -->
 
     <!-- Start Create -->
     <form action="{{route('task.store')}}" method="POST" class="mt-4">
@@ -37,38 +45,54 @@
             </button>
         </div>
     </form>
-
     <!-- End Create -->
-
-
 
     <!-- Start all tasks -->
     <div class="my-6">
         <h5 class="text-lg">Tasks</h5>
         <hr class="border-2 mt-2 border-purple-300"/>
         @foreach($tasks as $task)
-            <div class="bg-white mt-4 rounded-lg shadow-lg px-2 py-2 flex justify-between items-center">
-                {{ $task->title }}
-                <div class="ml-2">
-                    <!-- edit button -->
-                    <button class="mr-2">
-                        <svg class="fill-current text-purple-500 w-4 h-4"  viewBox="0 0 512 512">
-                            <path d="M290.74 93.24l128.02 128.02-277.99 277.99-114.14 12.6C11.35 513.54-1.56 500.62.14 485.34l12.7-114.22 277.9-277.88zm207.2-19.06l-60.11-60.11c-18.75-18.75-49.16-18.75-67.91 0l-56.55 56.55 128.02 128.02 56.55-56.55c18.75-18.76 18.75-49.16 0-67.91z"/>
-                        </svg>
-                    </button>
-
-                    <!-- delete button -->
-                    <form action="{{route('task.destroy',$task->id)}}" method="POST" class="inline-block">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="mt-1">
-                            <svg class="fill-current text-red-500 w-4 h-4" viewBox="0 0 448 512">
-                                <path d="M432 32H312l-9.4-18.7A24 24 0 00281.1 0H166.8a23.72 23.72 0 00-21.4 13.3L136 32H16A16 16 0 000 48v32a16 16 0 0016 16h416a16 16 0 0016-16V48a16 16 0 00-16-16zM53.2 467a48 48 0 0047.9 45h245.8a48 48 0 0047.9-45L416 128H32z"/>
+            <div x-data="dropdown()">
+                <div class="bg-white mt-4 rounded-lg shadow-lg px-2 py-2 flex justify-between items-center">
+                    {{ $task->title }}
+                    <div class="ml-2">
+                        <!-- edit button -->
+                        <button class="mr-2" x-on:click="open">
+                            <svg class="fill-current text-purple-500 w-4 h-4"  viewBox="0 0 512 512">
+                                <path d="M290.74 93.24l128.02 128.02-277.99 277.99-114.14 12.6C11.35 513.54-1.56 500.62.14 485.34l12.7-114.22 277.9-277.88zm207.2-19.06l-60.11-60.11c-18.75-18.75-49.16-18.75-67.91 0l-56.55 56.55 128.02 128.02 56.55-56.55c18.75-18.76 18.75-49.16 0-67.91z"/>
                             </svg>
                         </button>
-                    </form>
 
+                        <!-- delete button -->
+                        <form action="{{route('task.destroy',$task->id)}}" method="POST" class="inline-block">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="mt-1">
+                                <svg class="fill-current text-red-500 w-4 h-4" viewBox="0 0 448 512">
+                                    <path d="M432 32H312l-9.4-18.7A24 24 0 00281.1 0H166.8a23.72 23.72 0 00-21.4 13.3L136 32H16A16 16 0 000 48v32a16 16 0 0016 16h416a16 16 0 0016-16V48a16 16 0 00-16-16zM53.2 467a48 48 0 0047.9 45h245.8a48 48 0 0047.9-45L416 128H32z"/>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
                 </div>
+
+                <!-- Start edit dropdown -->
+                <div x-show="isOpen()" x-on:click.away="close">
+                    <form action="{{route('task.update',$task->id)}}" method="POST" class="inline-block w-full">
+                        @csrf
+                        @method('PATCH')
+                        <div class="flex items-stretch mt-2">
+                            <input type="text" name="edit_title" value="{{ $task->title }}" class="w-full rounded-lg shadow-lg px-2 py-2 outline-none">
+                            <button type="submit" class="bg-green-500 shadow-lg text-white px-6 py-2 rounded-lg ml-2">
+                                <svg class="fill-current w-5 h-5" viewBox="0 0 512 512">
+                                    <path d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <!-- End edit dropdown -->
+
             </div>
         @endforeach
     </div>
@@ -76,11 +100,21 @@
 
 
 </div>
-<!-- End Scripts -->
+<!-- Start Scripts -->
 <script src="{{ asset('js/app.js') }}"></script>
-<livewire:scripts />
 <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js"></script>
-<!-- End Scripts -->
+<script>
+    // edit title dropdown
+    function dropdown() {
+        return {
+            show: false,
+            open() { this.show = true },
+            close() { this.show = false },
+            isOpen() { return this.show === true },
+        }
+    }
+</script>
 @include('sweet::alert')
+<!-- End Scripts -->
 </body>
 </html>

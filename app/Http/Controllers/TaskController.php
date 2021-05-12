@@ -29,9 +29,11 @@ class TaskController extends Controller
         $request->validate([
            'title' => 'required|string|min:3|max:100'
         ]);
+
         Task::create([
             'title' => $request->title
         ]);
+
         alert()->success('Task Successfully added', 'Task added');
         return redirect()->back();
     }
@@ -41,11 +43,20 @@ class TaskController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, Task $task)
     {
-        //
+        $request->validate([
+            'edit_title' => 'required|string|min:3|max:100'
+        ]);
+
+        $task->update([
+            'title' => $request->edit_title
+        ]);
+
+        alert()->success('Task Successfully edited', 'Task edited');
+        return redirect()->back();
     }
 
     /**
