@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 use Illuminate\Http\Request;
 
@@ -21,14 +23,12 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(StoreTaskRequest $request)
     {
-        $request->validate([
-           'title' => 'required|string|min:3|max:100'
-        ]);
+        // The incoming request is valid...
 
         Task::create([
             'title' => $request->title
@@ -41,15 +41,13 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, Task $task)
+    public function update(UpdateTaskRequest $request, Task $task)
     {
-        $request->validate([
-            'edit_title' => 'required|string|min:3|max:100'
-        ]);
+        // The incoming request is valid...
 
         $task->update([
             'title' => $request->edit_title
